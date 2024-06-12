@@ -101,11 +101,11 @@ port as specified by the RISC-V privileged specification is implemented in the c
 
 | Boot Mode |            Description            |
 | :-------: | :-------------------------------: |
-|   0000    |      Reserved (Prints Help)       |
-|   0001    |       Boot to internal SRAM       |
-|   0100    |   XMODEM Binary loader to SRAM    |
-|   0110    |   XMODEM Binary loader to DRAM    |
-|   0111    | Flash to DRAM & Execute from DRAM |
+|   0000    |      Info Mode                    |
+|   0010    |       Boot from SD Card           |
+|   0111    |   Boot From Flash to DRAM         |
+|   0101    |   Boot From UART to Flash         |
+|   0110    |   Boot from UART to DRAM          |
 
 * Boot mode is selected based on status of DIP switches in VC707 evaluation board during power on.
 * This ROM is loaded with Zeroth Stage BootLoader (ZSBL) which supports the loading binary to inter-
