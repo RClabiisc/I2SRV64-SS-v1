@@ -1,0 +1,994 @@
+
+BootROM.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text.init:
+
+0000000000010000 <_start>:
+   10000:	0500006f          	j	10050 <reset_vector>
+   10004:	00000013          	nop
+   10008:	00000013          	nop
+   1000c:	00000013          	nop
+
+0000000000010010 <trap_entry>:
+   10010:	342022f3          	csrr	t0,mcause
+   10014:	00f2f513          	andi	a0,t0,15
+   10018:	20010737          	lui	a4,0x20010
+   1001c:	00472783          	lw	a5,4(a4) # 20010004 <_end+0x1fffee95>
+   10020:	0007879b          	sext.w	a5,a5
+   10024:	f007f793          	andi	a5,a5,-256
+   10028:	00f72223          	sw	a5,4(a4)
+   1002c:	20010737          	lui	a4,0x20010
+   10030:	00072783          	lw	a5,0(a4) # 20010000 <_end+0x1fffee91>
+   10034:	0ff57513          	andi	a0,a0,255
+   10038:	0007879b          	sext.w	a5,a5
+   1003c:	f007f793          	andi	a5,a5,-256
+   10040:	00a7e7b3          	or	a5,a5,a0
+   10044:	00f72023          	sw	a5,0(a4)
+   10048:	0000006f          	j	10048 <trap_entry+0x38>
+   1004c:	0000                	unimp
+	...
+
+Disassembly of section .text:
+
+0000000000010050 <reset_vector>:
+   10050:	00000093          	li	ra,0
+   10054:	00000113          	li	sp,0
+   10058:	00000193          	li	gp,0
+   1005c:	00000213          	li	tp,0
+   10060:	00000293          	li	t0,0
+   10064:	00000313          	li	t1,0
+   10068:	00000393          	li	t2,0
+   1006c:	00000413          	li	s0,0
+   10070:	00000493          	li	s1,0
+   10074:	00000513          	li	a0,0
+   10078:	00000593          	li	a1,0
+   1007c:	00000613          	li	a2,0
+   10080:	00000693          	li	a3,0
+   10084:	00000713          	li	a4,0
+   10088:	00000793          	li	a5,0
+   1008c:	00000813          	li	a6,0
+   10090:	00000893          	li	a7,0
+   10094:	00000913          	li	s2,0
+   10098:	00000993          	li	s3,0
+   1009c:	00000a13          	li	s4,0
+   100a0:	00000a93          	li	s5,0
+   100a4:	00000b13          	li	s6,0
+   100a8:	00000b93          	li	s7,0
+   100ac:	00000c13          	li	s8,0
+   100b0:	00000c93          	li	s9,0
+   100b4:	00000d13          	li	s10,0
+   100b8:	00000d93          	li	s11,0
+   100bc:	00000e13          	li	t3,0
+   100c0:	00000e93          	li	t4,0
+   100c4:	00000f13          	li	t5,0
+   100c8:	00000f93          	li	t6,0
+   100cc:	34001073          	csrw	mscratch,zero
+   100d0:	0010029b          	addiw	t0,zero,1
+   100d4:	03529293          	slli	t0,t0,0x35
+   100d8:	fff28293          	addi	t0,t0,-1
+   100dc:	3b029073          	csrw	pmpaddr0,t0
+   100e0:	01f00293          	li	t0,31
+   100e4:	3a029073          	csrw	pmpcfg0,t0
+   100e8:	18005073          	csrwi	satp,0
+   100ec:	00000297          	auipc	t0,0x0
+   100f0:	f2428293          	addi	t0,t0,-220 # 10010 <trap_entry>
+   100f4:	30529073          	csrw	mtvec,t0
+   100f8:	30502373          	csrr	t1,mtvec
+   100fc:	00629063          	bne	t0,t1,100fc <reset_vector+0xac>
+   10100:	10010137          	lui	sp,0x10010
+   10104:	00001537          	lui	a0,0x1
+   10108:	00052503          	lw	a0,0(a0) # 1000 <_start-0xf000>
+   1010c:	00f57513          	andi	a0,a0,15
+   10110:	12d0006f          	j	10a3c <main>
+
+0000000000010114 <fw_jump>:
+   10114:	00050067          	jr	a0
+
+0000000000010118 <info>:
+   10118:	7179                	addi	sp,sp,-48
+   1011a:	4529                	li	a0,10
+   1011c:	f406                	sd	ra,40(sp)
+   1011e:	f022                	sd	s0,32(sp)
+   10120:	ec26                	sd	s1,24(sp)
+   10122:	e84a                	sd	s2,16(sp)
+   10124:	e44e                	sd	s3,8(sp)
+   10126:	23e000ef          	jal	ra,10364 <uart_write>
+   1012a:	00001517          	auipc	a0,0x1
+   1012e:	a1650513          	addi	a0,a0,-1514 # 10b40 <logo>
+   10132:	24e000ef          	jal	ra,10380 <uart_string>
+   10136:	00001517          	auipc	a0,0x1
+   1013a:	d7a50513          	addi	a0,a0,-646 # 10eb0 <crc16tab+0x200>
+   1013e:	242000ef          	jal	ra,10380 <uart_string>
+   10142:	00001517          	auipc	a0,0x1
+   10146:	d7650513          	addi	a0,a0,-650 # 10eb8 <crc16tab+0x208>
+   1014a:	236000ef          	jal	ra,10380 <uart_string>
+   1014e:	00001517          	auipc	a0,0x1
+   10152:	d8a50513          	addi	a0,a0,-630 # 10ed8 <crc16tab+0x228>
+   10156:	22a000ef          	jal	ra,10380 <uart_string>
+   1015a:	00001517          	auipc	a0,0x1
+   1015e:	da650513          	addi	a0,a0,-602 # 10f00 <crc16tab+0x250>
+   10162:	21e000ef          	jal	ra,10380 <uart_string>
+   10166:	00001517          	auipc	a0,0x1
+   1016a:	dc250513          	addi	a0,a0,-574 # 10f28 <crc16tab+0x278>
+   1016e:	212000ef          	jal	ra,10380 <uart_string>
+   10172:	00001517          	auipc	a0,0x1
+   10176:	df650513          	addi	a0,a0,-522 # 10f68 <crc16tab+0x2b8>
+   1017a:	206000ef          	jal	ra,10380 <uart_string>
+   1017e:	00001517          	auipc	a0,0x1
+   10182:	e0a50513          	addi	a0,a0,-502 # 10f88 <crc16tab+0x2d8>
+   10186:	1fa000ef          	jal	ra,10380 <uart_string>
+   1018a:	00001517          	auipc	a0,0x1
+   1018e:	e2650513          	addi	a0,a0,-474 # 10fb0 <crc16tab+0x300>
+   10192:	1ee000ef          	jal	ra,10380 <uart_string>
+   10196:	00001517          	auipc	a0,0x1
+   1019a:	e3a50513          	addi	a0,a0,-454 # 10fd0 <crc16tab+0x320>
+   1019e:	1e2000ef          	jal	ra,10380 <uart_string>
+   101a2:	00001517          	auipc	a0,0x1
+   101a6:	e7650513          	addi	a0,a0,-394 # 11018 <crc16tab+0x368>
+   101aa:	1d6000ef          	jal	ra,10380 <uart_string>
+   101ae:	c0102473          	rdtime	s0
+   101b2:	4481                	li	s1,0
+   101b4:	4921                	li	s2,8
+   101b6:	4985                	li	s3,1
+   101b8:	3e840413          	addi	s0,s0,1000
+   101bc:	06400513          	li	a0,100
+   101c0:	166000ef          	jal	ra,10326 <uart_read>
+   101c4:	87aa                	mv	a5,a0
+   101c6:	2501                	sext.w	a0,a0
+   101c8:	00f05463          	blez	a5,101d0 <info+0xb8>
+   101cc:	198000ef          	jal	ra,10364 <uart_write>
+   101d0:	c01027f3          	rdtime	a5
+   101d4:	fef474e3          	bgeu	s0,a5,101bc <info+0xa4>
+   101d8:	2485                	addiw	s1,s1,1
+   101da:	0ff4f493          	andi	s1,s1,255
+   101de:	01248963          	beq	s1,s2,101f0 <info+0xd8>
+   101e2:	0099953b          	sllw	a0,s3,s1
+   101e6:	124000ef          	jal	ra,1030a <led_write>
+   101ea:	c0102473          	rdtime	s0
+   101ee:	b7e9                	j	101b8 <info+0xa0>
+   101f0:	4505                	li	a0,1
+   101f2:	4481                	li	s1,0
+   101f4:	bfcd                	j	101e6 <info+0xce>
+
+00000000000101f6 <xmodem_loader>:
+   101f6:	1101                	addi	sp,sp,-32
+   101f8:	e822                	sd	s0,16(sp)
+   101fa:	842a                	mv	s0,a0
+   101fc:	4529                	li	a0,10
+   101fe:	ec06                	sd	ra,24(sp)
+   10200:	e426                	sd	s1,8(sp)
+   10202:	84ae                	mv	s1,a1
+   10204:	160000ef          	jal	ra,10364 <uart_write>
+   10208:	00001517          	auipc	a0,0x1
+   1020c:	93850513          	addi	a0,a0,-1736 # 10b40 <logo>
+   10210:	170000ef          	jal	ra,10380 <uart_string>
+   10214:	00001517          	auipc	a0,0x1
+   10218:	c9c50513          	addi	a0,a0,-868 # 10eb0 <crc16tab+0x200>
+   1021c:	164000ef          	jal	ra,10380 <uart_string>
+   10220:	00001517          	auipc	a0,0x1
+   10224:	e1850513          	addi	a0,a0,-488 # 11038 <crc16tab+0x388>
+   10228:	158000ef          	jal	ra,10380 <uart_string>
+   1022c:	0a000513          	li	a0,160
+   10230:	0da000ef          	jal	ra,1030a <led_write>
+   10234:	00001517          	auipc	a0,0x1
+   10238:	e3c50513          	addi	a0,a0,-452 # 11070 <crc16tab+0x3c0>
+   1023c:	144000ef          	jal	ra,10380 <uart_string>
+   10240:	8522                	mv	a0,s0
+   10242:	1ce000ef          	jal	ra,10410 <uart_printhex64>
+   10246:	00001517          	auipc	a0,0x1
+   1024a:	e5250513          	addi	a0,a0,-430 # 11098 <crc16tab+0x3e8>
+   1024e:	132000ef          	jal	ra,10380 <uart_string>
+   10252:	85a6                	mv	a1,s1
+   10254:	8522                	mv	a0,s0
+   10256:	39e000ef          	jal	ra,105f4 <xmodemReceive>
+   1025a:	84aa                	mv	s1,a0
+   1025c:	3e800513          	li	a0,1000
+   10260:	378000ef          	jal	ra,105d8 <delay>
+   10264:	02905e63          	blez	s1,102a0 <xmodem_loader+0xaa>
+   10268:	00001517          	auipc	a0,0x1
+   1026c:	e6050513          	addi	a0,a0,-416 # 110c8 <crc16tab+0x418>
+   10270:	110000ef          	jal	ra,10380 <uart_string>
+   10274:	0004851b          	sext.w	a0,s1
+   10278:	136000ef          	jal	ra,103ae <uart_printhex32>
+   1027c:	00001517          	auipc	a0,0x1
+   10280:	e6c50513          	addi	a0,a0,-404 # 110e8 <crc16tab+0x438>
+   10284:	0fc000ef          	jal	ra,10380 <uart_string>
+   10288:	8522                	mv	a0,s0
+   1028a:	186000ef          	jal	ra,10410 <uart_printhex64>
+   1028e:	4529                	li	a0,10
+   10290:	0d4000ef          	jal	ra,10364 <uart_write>
+   10294:	60e2                	ld	ra,24(sp)
+   10296:	6442                	ld	s0,16(sp)
+   10298:	64a2                	ld	s1,8(sp)
+   1029a:	4501                	li	a0,0
+   1029c:	6105                	addi	sp,sp,32
+   1029e:	8082                	ret
+   102a0:	00001517          	auipc	a0,0x1
+   102a4:	e6850513          	addi	a0,a0,-408 # 11108 <crc16tab+0x458>
+   102a8:	0d8000ef          	jal	ra,10380 <uart_string>
+   102ac:	60e2                	ld	ra,24(sp)
+   102ae:	6442                	ld	s0,16(sp)
+   102b0:	64a2                	ld	s1,8(sp)
+   102b2:	4505                	li	a0,1
+   102b4:	6105                	addi	sp,sp,32
+   102b6:	8082                	ret
+
+00000000000102b8 <crc16_ccitt>:
+   102b8:	872a                	mv	a4,a0
+   102ba:	02b05b63          	blez	a1,102f0 <crc16_ccitt+0x38>
+   102be:	95aa                	add	a1,a1,a0
+   102c0:	00001617          	auipc	a2,0x1
+   102c4:	9f060613          	addi	a2,a2,-1552 # 10cb0 <crc16tab>
+   102c8:	4501                	li	a0,0
+   102ca:	00074683          	lbu	a3,0(a4)
+   102ce:	0085579b          	srliw	a5,a0,0x8
+   102d2:	0085151b          	slliw	a0,a0,0x8
+   102d6:	8fb5                	xor	a5,a5,a3
+   102d8:	2781                	sext.w	a5,a5
+   102da:	0786                	slli	a5,a5,0x1
+   102dc:	97b2                	add	a5,a5,a2
+   102de:	0007d783          	lhu	a5,0(a5)
+   102e2:	0705                	addi	a4,a4,1
+   102e4:	8d3d                	xor	a0,a0,a5
+   102e6:	1542                	slli	a0,a0,0x30
+   102e8:	9141                	srli	a0,a0,0x30
+   102ea:	feb710e3          	bne	a4,a1,102ca <crc16_ccitt+0x12>
+   102ee:	8082                	ret
+   102f0:	4501                	li	a0,0
+   102f2:	8082                	ret
+
+00000000000102f4 <gpio_init>:
+   102f4:	200107b7          	lui	a5,0x20010
+   102f8:	00478693          	addi	a3,a5,4 # 20010004 <_end+0x1fffee95>
+   102fc:	4701                	li	a4,0
+   102fe:	c298                	sw	a4,0(a3)
+   10300:	0ff00713          	li	a4,255
+   10304:	07b1                	addi	a5,a5,12
+   10306:	c398                	sw	a4,0(a5)
+   10308:	8082                	ret
+
+000000000001030a <led_write>:
+   1030a:	0ff57513          	andi	a0,a0,255
+   1030e:	200107b7          	lui	a5,0x20010
+   10312:	c388                	sw	a0,0(a5)
+   10314:	8082                	ret
+
+0000000000010316 <dipsw_read>:
+   10316:	0c80000f          	fence	io,i
+   1031a:	20010537          	lui	a0,0x20010
+   1031e:	0521                	addi	a0,a0,8
+   10320:	4108                	lw	a0,0(a0)
+   10322:	2501                	sext.w	a0,a0
+   10324:	8082                	ret
+
+0000000000010326 <uart_read>:
+   10326:	c01027f3          	rdtime	a5
+   1032a:	3e800693          	li	a3,1000
+   1032e:	02a686bb          	mulw	a3,a3,a0
+   10332:	200005b7          	lui	a1,0x20000
+   10336:	00858613          	addi	a2,a1,8 # 20000008 <_end+0x1ffeee99>
+   1033a:	1682                	slli	a3,a3,0x20
+   1033c:	9281                	srli	a3,a3,0x20
+   1033e:	96be                	add	a3,a3,a5
+   10340:	a011                	j	10344 <uart_read+0x1e>
+   10342:	eb99                	bnez	a5,10358 <uart_read+0x32>
+   10344:	0c80000f          	fence	io,i
+   10348:	421c                	lw	a5,0(a2)
+   1034a:	c0102773          	rdtime	a4
+   1034e:	8b85                	andi	a5,a5,1
+   10350:	fee6f9e3          	bgeu	a3,a4,10342 <uart_read+0x1c>
+   10354:	557d                	li	a0,-1
+   10356:	8082                	ret
+   10358:	0c80000f          	fence	io,i
+   1035c:	418c                	lw	a1,0(a1)
+   1035e:	0005851b          	sext.w	a0,a1
+   10362:	8082                	ret
+
+0000000000010364 <uart_write>:
+   10364:	200006b7          	lui	a3,0x20000
+   10368:	00868713          	addi	a4,a3,8 # 20000008 <_end+0x1ffeee99>
+   1036c:	0c80000f          	fence	io,i
+   10370:	431c                	lw	a5,0(a4)
+   10372:	8ba1                	andi	a5,a5,8
+   10374:	ffe5                	bnez	a5,1036c <uart_write+0x8>
+   10376:	0d40000f          	fence	iow,o
+   1037a:	0691                	addi	a3,a3,4
+   1037c:	c288                	sw	a0,0(a3)
+   1037e:	8082                	ret
+
+0000000000010380 <uart_string>:
+   10380:	00054783          	lbu	a5,0(a0) # 20010000 <_end+0x1fffee91>
+   10384:	c785                	beqz	a5,103ac <uart_string+0x2c>
+   10386:	20000637          	lui	a2,0x20000
+   1038a:	00860713          	addi	a4,a2,8 # 20000008 <_end+0x1ffeee99>
+   1038e:	0611                	addi	a2,a2,4
+   10390:	0505                	addi	a0,a0,1
+   10392:	0007869b          	sext.w	a3,a5
+   10396:	0c80000f          	fence	io,i
+   1039a:	431c                	lw	a5,0(a4)
+   1039c:	8ba1                	andi	a5,a5,8
+   1039e:	ffe5                	bnez	a5,10396 <uart_string+0x16>
+   103a0:	0d40000f          	fence	iow,o
+   103a4:	c214                	sw	a3,0(a2)
+   103a6:	00054783          	lbu	a5,0(a0)
+   103aa:	f3fd                	bnez	a5,10390 <uart_string+0x10>
+   103ac:	8082                	ret
+
+00000000000103ae <uart_printhex32>:
+   103ae:	1141                	addi	sp,sp,-16
+   103b0:	878a                	mv	a5,sp
+   103b2:	ff810813          	addi	a6,sp,-8 # 1000fff8 <_end+0xfffee89>
+   103b6:	45a5                	li	a1,9
+   103b8:	00f57693          	andi	a3,a0,15
+   103bc:	8736                	mv	a4,a3
+   103be:	03000613          	li	a2,48
+   103c2:	00d5f463          	bgeu	a1,a3,103ca <uart_printhex32+0x1c>
+   103c6:	05700613          	li	a2,87
+   103ca:	9f31                	addw	a4,a4,a2
+   103cc:	00e783a3          	sb	a4,7(a5) # 20010007 <_end+0x1fffee98>
+   103d0:	17fd                	addi	a5,a5,-1
+   103d2:	0045551b          	srliw	a0,a0,0x4
+   103d6:	ff0791e3          	bne	a5,a6,103b8 <uart_printhex32+0xa>
+   103da:	00014783          	lbu	a5,0(sp)
+   103de:	00010423          	sb	zero,8(sp)
+   103e2:	c78d                	beqz	a5,1040c <uart_printhex32+0x5e>
+   103e4:	200005b7          	lui	a1,0x20000
+   103e8:	00858713          	addi	a4,a1,8 # 20000008 <_end+0x1ffeee99>
+   103ec:	860a                	mv	a2,sp
+   103ee:	0591                	addi	a1,a1,4
+   103f0:	0605                	addi	a2,a2,1
+   103f2:	0007869b          	sext.w	a3,a5
+   103f6:	0c80000f          	fence	io,i
+   103fa:	431c                	lw	a5,0(a4)
+   103fc:	8ba1                	andi	a5,a5,8
+   103fe:	ffe5                	bnez	a5,103f6 <uart_printhex32+0x48>
+   10400:	0d40000f          	fence	iow,o
+   10404:	c194                	sw	a3,0(a1)
+   10406:	00064783          	lbu	a5,0(a2)
+   1040a:	f3fd                	bnez	a5,103f0 <uart_printhex32+0x42>
+   1040c:	0141                	addi	sp,sp,16
+   1040e:	8082                	ret
+
+0000000000010410 <uart_printhex64>:
+   10410:	1101                	addi	sp,sp,-32
+   10412:	0030                	addi	a2,sp,8
+   10414:	01710793          	addi	a5,sp,23
+   10418:	4825                	li	a6,9
+   1041a:	a011                	j	1041e <uart_printhex64+0xe>
+   1041c:	87ba                	mv	a5,a4
+   1041e:	00f57693          	andi	a3,a0,15
+   10422:	8736                	mv	a4,a3
+   10424:	03000593          	li	a1,48
+   10428:	00d87463          	bgeu	a6,a3,10430 <uart_printhex64+0x20>
+   1042c:	05700593          	li	a1,87
+   10430:	9f2d                	addw	a4,a4,a1
+   10432:	00e78023          	sb	a4,0(a5)
+   10436:	8111                	srli	a0,a0,0x4
+   10438:	fff78713          	addi	a4,a5,-1
+   1043c:	fef610e3          	bne	a2,a5,1041c <uart_printhex64+0xc>
+   10440:	00814783          	lbu	a5,8(sp)
+   10444:	00010c23          	sb	zero,24(sp)
+   10448:	c78d                	beqz	a5,10472 <uart_printhex64+0x62>
+   1044a:	200005b7          	lui	a1,0x20000
+   1044e:	00858713          	addi	a4,a1,8 # 20000008 <_end+0x1ffeee99>
+   10452:	86b2                	mv	a3,a2
+   10454:	0591                	addi	a1,a1,4
+   10456:	0685                	addi	a3,a3,1
+   10458:	0007861b          	sext.w	a2,a5
+   1045c:	0c80000f          	fence	io,i
+   10460:	431c                	lw	a5,0(a4)
+   10462:	8ba1                	andi	a5,a5,8
+   10464:	ffe5                	bnez	a5,1045c <uart_printhex64+0x4c>
+   10466:	0d40000f          	fence	iow,o
+   1046a:	c190                	sw	a2,0(a1)
+   1046c:	0006c783          	lbu	a5,0(a3)
+   10470:	f3fd                	bnez	a5,10456 <uart_printhex64+0x46>
+   10472:	6105                	addi	sp,sp,32
+   10474:	8082                	ret
+
+0000000000010476 <memcpy>:
+   10476:	00c5e7b3          	or	a5,a1,a2
+   1047a:	8fc9                	or	a5,a5,a0
+   1047c:	8b9d                	andi	a5,a5,7
+   1047e:	00c506b3          	add	a3,a0,a2
+   10482:	cf91                	beqz	a5,1049e <memcpy+0x28>
+   10484:	962e                	add	a2,a2,a1
+   10486:	87aa                	mv	a5,a0
+   10488:	02d57663          	bgeu	a0,a3,104b4 <memcpy+0x3e>
+   1048c:	0005c703          	lbu	a4,0(a1)
+   10490:	0585                	addi	a1,a1,1
+   10492:	0785                	addi	a5,a5,1
+   10494:	fee78fa3          	sb	a4,-1(a5)
+   10498:	fec59ae3          	bne	a1,a2,1048c <memcpy+0x16>
+   1049c:	8082                	ret
+   1049e:	fed57fe3          	bgeu	a0,a3,1049c <memcpy+0x26>
+   104a2:	87aa                	mv	a5,a0
+   104a4:	6198                	ld	a4,0(a1)
+   104a6:	07a1                	addi	a5,a5,8
+   104a8:	05a1                	addi	a1,a1,8
+   104aa:	fee7bc23          	sd	a4,-8(a5)
+   104ae:	fed7ebe3          	bltu	a5,a3,104a4 <memcpy+0x2e>
+   104b2:	8082                	ret
+   104b4:	8082                	ret
+
+00000000000104b6 <memset>:
+   104b6:	00c567b3          	or	a5,a0,a2
+   104ba:	8b9d                	andi	a5,a5,7
+   104bc:	962a                	add	a2,a2,a0
+   104be:	0ff5f593          	andi	a1,a1,255
+   104c2:	cb91                	beqz	a5,104d6 <memset+0x20>
+   104c4:	87aa                	mv	a5,a0
+   104c6:	02c57a63          	bgeu	a0,a2,104fa <memset+0x44>
+   104ca:	0785                	addi	a5,a5,1
+   104cc:	feb78fa3          	sb	a1,-1(a5)
+   104d0:	fef61de3          	bne	a2,a5,104ca <memset+0x14>
+   104d4:	8082                	ret
+   104d6:	00859793          	slli	a5,a1,0x8
+   104da:	8ddd                	or	a1,a1,a5
+   104dc:	01059793          	slli	a5,a1,0x10
+   104e0:	8fcd                	or	a5,a5,a1
+   104e2:	02079593          	slli	a1,a5,0x20
+   104e6:	8ddd                	or	a1,a1,a5
+   104e8:	fec576e3          	bgeu	a0,a2,104d4 <memset+0x1e>
+   104ec:	87aa                	mv	a5,a0
+   104ee:	07a1                	addi	a5,a5,8
+   104f0:	feb7bc23          	sd	a1,-8(a5)
+   104f4:	fec7ede3          	bltu	a5,a2,104ee <memset+0x38>
+   104f8:	8082                	ret
+   104fa:	8082                	ret
+
+00000000000104fc <strlen>:
+   104fc:	00054783          	lbu	a5,0(a0)
+   10500:	cb89                	beqz	a5,10512 <strlen+0x16>
+   10502:	87aa                	mv	a5,a0
+   10504:	0017c703          	lbu	a4,1(a5)
+   10508:	0785                	addi	a5,a5,1
+   1050a:	ff6d                	bnez	a4,10504 <strlen+0x8>
+   1050c:	40a78533          	sub	a0,a5,a0
+   10510:	8082                	ret
+   10512:	4501                	li	a0,0
+   10514:	8082                	ret
+
+0000000000010516 <strnlen>:
+   10516:	00b506b3          	add	a3,a0,a1
+   1051a:	87aa                	mv	a5,a0
+   1051c:	e589                	bnez	a1,10526 <strnlen+0x10>
+   1051e:	a829                	j	10538 <strnlen+0x22>
+   10520:	0785                	addi	a5,a5,1
+   10522:	00f68863          	beq	a3,a5,10532 <strnlen+0x1c>
+   10526:	0007c703          	lbu	a4,0(a5)
+   1052a:	fb7d                	bnez	a4,10520 <strnlen+0xa>
+   1052c:	40a78533          	sub	a0,a5,a0
+   10530:	8082                	ret
+   10532:	40a68533          	sub	a0,a3,a0
+   10536:	8082                	ret
+   10538:	4501                	li	a0,0
+   1053a:	8082                	ret
+
+000000000001053c <strcmp>:
+   1053c:	00054783          	lbu	a5,0(a0)
+   10540:	0585                	addi	a1,a1,1
+   10542:	0505                	addi	a0,a0,1
+   10544:	fff5c703          	lbu	a4,-1(a1)
+   10548:	c799                	beqz	a5,10556 <strcmp+0x1a>
+   1054a:	fee789e3          	beq	a5,a4,1053c <strcmp>
+   1054e:	0007851b          	sext.w	a0,a5
+   10552:	9d19                	subw	a0,a0,a4
+   10554:	8082                	ret
+   10556:	4501                	li	a0,0
+   10558:	bfed                	j	10552 <strcmp+0x16>
+
+000000000001055a <strcpy>:
+   1055a:	87aa                	mv	a5,a0
+   1055c:	0005c703          	lbu	a4,0(a1)
+   10560:	0785                	addi	a5,a5,1
+   10562:	0585                	addi	a1,a1,1
+   10564:	fee78fa3          	sb	a4,-1(a5)
+   10568:	fb75                	bnez	a4,1055c <strcpy+0x2>
+   1056a:	8082                	ret
+
+000000000001056c <atol>:
+   1056c:	00054703          	lbu	a4,0(a0)
+   10570:	02000693          	li	a3,32
+   10574:	87aa                	mv	a5,a0
+   10576:	00d71763          	bne	a4,a3,10584 <atol+0x18>
+   1057a:	0017c703          	lbu	a4,1(a5)
+   1057e:	0785                	addi	a5,a5,1
+   10580:	fed70de3          	beq	a4,a3,1057a <atol+0xe>
+   10584:	02d00693          	li	a3,45
+   10588:	04d70163          	beq	a4,a3,105ca <atol+0x5e>
+   1058c:	02b00693          	li	a3,43
+   10590:	02d70663          	beq	a4,a3,105bc <atol+0x50>
+   10594:	0007c683          	lbu	a3,0(a5)
+   10598:	4581                	li	a1,0
+   1059a:	c695                	beqz	a3,105c6 <atol+0x5a>
+   1059c:	4501                	li	a0,0
+   1059e:	0785                	addi	a5,a5,1
+   105a0:	fd06861b          	addiw	a2,a3,-48
+   105a4:	00251713          	slli	a4,a0,0x2
+   105a8:	0007c683          	lbu	a3,0(a5)
+   105ac:	953a                	add	a0,a0,a4
+   105ae:	0506                	slli	a0,a0,0x1
+   105b0:	9532                	add	a0,a0,a2
+   105b2:	f6f5                	bnez	a3,1059e <atol+0x32>
+   105b4:	c991                	beqz	a1,105c8 <atol+0x5c>
+   105b6:	40a00533          	neg	a0,a0
+   105ba:	8082                	ret
+   105bc:	0017c683          	lbu	a3,1(a5)
+   105c0:	4581                	li	a1,0
+   105c2:	0785                	addi	a5,a5,1
+   105c4:	fee1                	bnez	a3,1059c <atol+0x30>
+   105c6:	4501                	li	a0,0
+   105c8:	8082                	ret
+   105ca:	0017c683          	lbu	a3,1(a5)
+   105ce:	4585                	li	a1,1
+   105d0:	0785                	addi	a5,a5,1
+   105d2:	f6e9                	bnez	a3,1059c <atol+0x30>
+   105d4:	4501                	li	a0,0
+   105d6:	bfcd                	j	105c8 <atol+0x5c>
+
+00000000000105d8 <delay>:
+   105d8:	c01027f3          	rdtime	a5
+   105dc:	3e800713          	li	a4,1000
+   105e0:	02a7073b          	mulw	a4,a4,a0
+   105e4:	9f3d                	addw	a4,a4,a5
+   105e6:	1702                	slli	a4,a4,0x20
+   105e8:	9301                	srli	a4,a4,0x20
+   105ea:	c01027f3          	rdtime	a5
+   105ee:	fee7eee3          	bltu	a5,a4,105ea <delay+0x12>
+   105f2:	8082                	ret
+
+00000000000105f4 <xmodemReceive>:
+   105f4:	b7010113          	addi	sp,sp,-1168
+   105f8:	46913c23          	sd	s1,1144(sp)
+   105fc:	47213823          	sd	s2,1136(sp)
+   10600:	200004b7          	lui	s1,0x20000
+   10604:	47313423          	sd	s3,1128(sp)
+   10608:	000f4937          	lui	s2,0xf4
+   1060c:	001e89b7          	lui	s3,0x1e8
+   10610:	48813023          	sd	s0,1152(sp)
+   10614:	47413023          	sd	s4,1120(sp)
+   10618:	45513c23          	sd	s5,1112(sp)
+   1061c:	45613823          	sd	s6,1104(sp)
+   10620:	45713423          	sd	s7,1096(sp)
+   10624:	45813023          	sd	s8,1088(sp)
+   10628:	43913c23          	sd	s9,1080(sp)
+   1062c:	43a13823          	sd	s10,1072(sp)
+   10630:	8c2a                	mv	s8,a0
+   10632:	48113423          	sd	ra,1160(sp)
+   10636:	43b13423          	sd	s11,1064(sp)
+   1063a:	8bae                	mv	s7,a1
+   1063c:	4d65                	li	s10,25
+   1063e:	4a01                	li	s4,0
+   10640:	4c85                	li	s9,1
+   10642:	04300513          	li	a0,67
+   10646:	4a81                	li	s5,0
+   10648:	00848413          	addi	s0,s1,8 # 20000008 <_end+0x1ffeee99>
+   1064c:	00448b13          	addi	s6,s1,4
+   10650:	48098993          	addi	s3,s3,1152 # 1e8480 <_end+0x1d7311>
+   10654:	24090913          	addi	s2,s2,576 # f4240 <_end+0xe30d1>
+   10658:	4641                	li	a2,16
+   1065a:	4591                	li	a1,4
+   1065c:	4861                	li	a6,24
+   1065e:	4305                	li	t1,1
+   10660:	4889                	li	a7,2
+   10662:	e505                	bnez	a0,1068a <xmodemReceive+0x96>
+   10664:	c01026f3          	rdtime	a3
+   10668:	96ce                	add	a3,a3,s3
+   1066a:	a011                	j	1066e <xmodemReceive+0x7a>
+   1066c:	e79d                	bnez	a5,1069a <xmodemReceive+0xa6>
+   1066e:	401c                	lw	a5,0(s0)
+   10670:	c0102773          	rdtime	a4
+   10674:	8b85                	andi	a5,a5,1
+   10676:	fee6fbe3          	bgeu	a3,a4,1066c <xmodemReceive+0x78>
+   1067a:	367d                	addiw	a2,a2,-1
+   1067c:	f27d                	bnez	a2,10662 <xmodemReceive+0x6e>
+   1067e:	04300793          	li	a5,67
+   10682:	2af51663          	bne	a0,a5,1092e <xmodemReceive+0x33a>
+   10686:	4555                	li	a0,21
+   10688:	bfc1                	j	10658 <xmodemReceive+0x64>
+   1068a:	401c                	lw	a5,0(s0)
+   1068c:	8ba1                	andi	a5,a5,8
+   1068e:	fff5                	bnez	a5,1068a <xmodemReceive+0x96>
+   10690:	0d40000f          	fence	iow,o
+   10694:	00ab2023          	sw	a0,0(s6)
+   10698:	b7f1                	j	10664 <xmodemReceive+0x70>
+   1069a:	0c80000f          	fence	io,i
+   1069e:	409c                	lw	a5,0(s1)
+   106a0:	2781                	sext.w	a5,a5
+   106a2:	fc07cce3          	bltz	a5,1067a <xmodemReceive+0x86>
+   106a6:	14b78363          	beq	a5,a1,107ec <xmodemReceive+0x1f8>
+   106aa:	10f5ef63          	bltu	a1,a5,107c8 <xmodemReceive+0x1d4>
+   106ae:	12678b63          	beq	a5,t1,107e4 <xmodemReceive+0x1f0>
+   106b2:	fd1794e3          	bne	a5,a7,1067a <xmodemReceive+0x86>
+   106b6:	4789                	li	a5,2
+   106b8:	40000593          	li	a1,1024
+   106bc:	04300713          	li	a4,67
+   106c0:	00e51363          	bne	a0,a4,106c6 <xmodemReceive+0xd2>
+   106c4:	4a85                	li	s5,1
+   106c6:	0155883b          	addw	a6,a1,s5
+   106ca:	0048051b          	addiw	a0,a6,4
+   106ce:	1502                	slli	a0,a0,0x20
+   106d0:	9101                	srli	a0,a0,0x20
+   106d2:	00f10c23          	sb	a5,24(sp)
+   106d6:	083c                	addi	a5,sp,24
+   106d8:	015588b3          	add	a7,a1,s5
+   106dc:	953e                	add	a0,a0,a5
+   106de:	01910613          	addi	a2,sp,25
+   106e2:	c01026f3          	rdtime	a3
+   106e6:	96ca                	add	a3,a3,s2
+   106e8:	a011                	j	106ec <xmodemReceive+0xf8>
+   106ea:	e3a1                	bnez	a5,1072a <xmodemReceive+0x136>
+   106ec:	401c                	lw	a5,0(s0)
+   106ee:	c0102773          	rdtime	a4
+   106f2:	8b85                	andi	a5,a5,1
+   106f4:	fee6fbe3          	bgeu	a3,a4,106ea <xmodemReceive+0xf6>
+   106f8:	0016e637          	lui	a2,0x16e
+   106fc:	36060613          	addi	a2,a2,864 # 16e360 <_end+0x15d1f1>
+   10700:	c01026f3          	rdtime	a3
+   10704:	96b2                	add	a3,a3,a2
+   10706:	a011                	j	1070a <xmodemReceive+0x116>
+   10708:	e7d5                	bnez	a5,107b4 <xmodemReceive+0x1c0>
+   1070a:	401c                	lw	a5,0(s0)
+   1070c:	c0102773          	rdtime	a4
+   10710:	8b85                	andi	a5,a5,1
+   10712:	fee6fbe3          	bgeu	a3,a4,10708 <xmodemReceive+0x114>
+   10716:	401c                	lw	a5,0(s0)
+   10718:	8ba1                	andi	a5,a5,8
+   1071a:	fff5                	bnez	a5,10716 <xmodemReceive+0x122>
+   1071c:	0d40000f          	fence	iow,o
+   10720:	47d5                	li	a5,21
+   10722:	00fb2023          	sw	a5,0(s6)
+   10726:	4501                	li	a0,0
+   10728:	bf05                	j	10658 <xmodemReceive+0x64>
+   1072a:	0c80000f          	fence	io,i
+   1072e:	409c                	lw	a5,0(s1)
+   10730:	2781                	sext.w	a5,a5
+   10732:	fc07c3e3          	bltz	a5,106f8 <xmodemReceive+0x104>
+   10736:	0605                	addi	a2,a2,1
+   10738:	fef60fa3          	sb	a5,-1(a2)
+   1073c:	faa613e3          	bne	a2,a0,106e2 <xmodemReceive+0xee>
+   10740:	01a14783          	lbu	a5,26(sp)
+   10744:	01914503          	lbu	a0,25(sp)
+   10748:	fff7c793          	not	a5,a5
+   1074c:	0ff7f793          	andi	a5,a5,255
+   10750:	faf514e3          	bne	a0,a5,106f8 <xmodemReceive+0x104>
+   10754:	01950663          	beq	a0,s9,10760 <xmodemReceive+0x16c>
+   10758:	fffc879b          	addiw	a5,s9,-1
+   1075c:	f8a79ee3          	bne	a5,a0,106f8 <xmodemReceive+0x104>
+   10760:	160a9263          	bnez	s5,108c4 <xmodemReceive+0x2d0>
+   10764:	fff8069b          	addiw	a3,a6,-1
+   10768:	1682                	slli	a3,a3,0x20
+   1076a:	087c                	addi	a5,sp,28
+   1076c:	01b10d93          	addi	s11,sp,27
+   10770:	9281                	srli	a3,a3,0x20
+   10772:	96be                	add	a3,a3,a5
+   10774:	876e                	mv	a4,s11
+   10776:	4781                	li	a5,0
+   10778:	00074603          	lbu	a2,0(a4)
+   1077c:	0705                	addi	a4,a4,1
+   1077e:	9fb1                	addw	a5,a5,a2
+   10780:	0ff7f793          	andi	a5,a5,255
+   10784:	fed71ae3          	bne	a4,a3,10778 <xmodemReceive+0x184>
+   10788:	42010713          	addi	a4,sp,1056
+   1078c:	98ba                	add	a7,a7,a4
+   1078e:	bfb8c703          	lbu	a4,-1029(a7)
+   10792:	f6f713e3          	bne	a4,a5,106f8 <xmodemReceive+0x104>
+   10796:	17950463          	beq	a0,s9,108fe <xmodemReceive+0x30a>
+   1079a:	3d7d                	addiw	s10,s10,-1
+   1079c:	23a05063          	blez	s10,109bc <xmodemReceive+0x3c8>
+   107a0:	401c                	lw	a5,0(s0)
+   107a2:	8ba1                	andi	a5,a5,8
+   107a4:	fff5                	bnez	a5,107a0 <xmodemReceive+0x1ac>
+   107a6:	0d40000f          	fence	iow,o
+   107aa:	4799                	li	a5,6
+   107ac:	00fb2023          	sw	a5,0(s6)
+   107b0:	4501                	li	a0,0
+   107b2:	b55d                	j	10658 <xmodemReceive+0x64>
+   107b4:	0c80000f          	fence	io,i
+   107b8:	409c                	lw	a5,0(s1)
+   107ba:	2781                	sext.w	a5,a5
+   107bc:	f407d2e3          	bgez	a5,10700 <xmodemReceive+0x10c>
+   107c0:	401c                	lw	a5,0(s0)
+   107c2:	8ba1                	andi	a5,a5,8
+   107c4:	fba9                	bnez	a5,10716 <xmodemReceive+0x122>
+   107c6:	bf99                	j	1071c <xmodemReceive+0x128>
+   107c8:	eb0799e3          	bne	a5,a6,1067a <xmodemReceive+0x86>
+   107cc:	c01026f3          	rdtime	a3
+   107d0:	96ca                	add	a3,a3,s2
+   107d2:	a011                	j	107d6 <xmodemReceive+0x1e2>
+   107d4:	e3c5                	bnez	a5,10874 <xmodemReceive+0x280>
+   107d6:	401c                	lw	a5,0(s0)
+   107d8:	c0102773          	rdtime	a4
+   107dc:	8b85                	andi	a5,a5,1
+   107de:	fee6fbe3          	bgeu	a3,a4,107d4 <xmodemReceive+0x1e0>
+   107e2:	bd61                	j	1067a <xmodemReceive+0x86>
+   107e4:	4785                	li	a5,1
+   107e6:	08000593          	li	a1,128
+   107ea:	bdc9                	j	106bc <xmodemReceive+0xc8>
+   107ec:	20000537          	lui	a0,0x20000
+   107f0:	0016e5b7          	lui	a1,0x16e
+   107f4:	36058593          	addi	a1,a1,864 # 16e360 <_end+0x15d1f1>
+   107f8:	00850613          	addi	a2,a0,8 # 20000008 <_end+0x1ffeee99>
+   107fc:	c01026f3          	rdtime	a3
+   10800:	96ae                	add	a3,a3,a1
+   10802:	a011                	j	10806 <xmodemReceive+0x212>
+   10804:	e3ad                	bnez	a5,10866 <xmodemReceive+0x272>
+   10806:	421c                	lw	a5,0(a2)
+   10808:	c0102773          	rdtime	a4
+   1080c:	8b85                	andi	a5,a5,1
+   1080e:	fee6fbe3          	bgeu	a3,a4,10804 <xmodemReceive+0x210>
+   10812:	200006b7          	lui	a3,0x20000
+   10816:	00868713          	addi	a4,a3,8 # 20000008 <_end+0x1ffeee99>
+   1081a:	431c                	lw	a5,0(a4)
+   1081c:	8ba1                	andi	a5,a5,8
+   1081e:	fff5                	bnez	a5,1081a <xmodemReceive+0x226>
+   10820:	0d40000f          	fence	iow,o
+   10824:	4799                	li	a5,6
+   10826:	0691                	addi	a3,a3,4
+   10828:	c29c                	sw	a5,0(a3)
+   1082a:	48813083          	ld	ra,1160(sp)
+   1082e:	48013403          	ld	s0,1152(sp)
+   10832:	47813483          	ld	s1,1144(sp)
+   10836:	47013903          	ld	s2,1136(sp)
+   1083a:	46813983          	ld	s3,1128(sp)
+   1083e:	45813a83          	ld	s5,1112(sp)
+   10842:	45013b03          	ld	s6,1104(sp)
+   10846:	44813b83          	ld	s7,1096(sp)
+   1084a:	44013c03          	ld	s8,1088(sp)
+   1084e:	43813c83          	ld	s9,1080(sp)
+   10852:	43013d03          	ld	s10,1072(sp)
+   10856:	42813d83          	ld	s11,1064(sp)
+   1085a:	8552                	mv	a0,s4
+   1085c:	46013a03          	ld	s4,1120(sp)
+   10860:	49010113          	addi	sp,sp,1168
+   10864:	8082                	ret
+   10866:	0c80000f          	fence	io,i
+   1086a:	411c                	lw	a5,0(a0)
+   1086c:	2781                	sext.w	a5,a5
+   1086e:	f807d7e3          	bgez	a5,107fc <xmodemReceive+0x208>
+   10872:	b745                	j	10812 <xmodemReceive+0x21e>
+   10874:	0c80000f          	fence	io,i
+   10878:	409c                	lw	a5,0(s1)
+   1087a:	2781                	sext.w	a5,a5
+   1087c:	df079fe3          	bne	a5,a6,1067a <xmodemReceive+0x86>
+   10880:	20000537          	lui	a0,0x20000
+   10884:	0016e5b7          	lui	a1,0x16e
+   10888:	36058593          	addi	a1,a1,864 # 16e360 <_end+0x15d1f1>
+   1088c:	00850613          	addi	a2,a0,8 # 20000008 <_end+0x1ffeee99>
+   10890:	c01026f3          	rdtime	a3
+   10894:	96ae                	add	a3,a3,a1
+   10896:	a019                	j	1089c <xmodemReceive+0x2a8>
+   10898:	10079463          	bnez	a5,109a0 <xmodemReceive+0x3ac>
+   1089c:	421c                	lw	a5,0(a2)
+   1089e:	c0102773          	rdtime	a4
+   108a2:	8b85                	andi	a5,a5,1
+   108a4:	fee6fae3          	bgeu	a3,a4,10898 <xmodemReceive+0x2a4>
+   108a8:	200007b7          	lui	a5,0x20000
+   108ac:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   108b0:	4298                	lw	a4,0(a3)
+   108b2:	8b21                	andi	a4,a4,8
+   108b4:	ff75                	bnez	a4,108b0 <xmodemReceive+0x2bc>
+   108b6:	0d40000f          	fence	iow,o
+   108ba:	4719                	li	a4,6
+   108bc:	0791                	addi	a5,a5,4
+   108be:	c398                	sw	a4,0(a5)
+   108c0:	5a7d                	li	s4,-1
+   108c2:	b7a5                	j	1082a <xmodemReceive+0x236>
+   108c4:	01b10d93          	addi	s11,sp,27
+   108c8:	856e                	mv	a0,s11
+   108ca:	e42e                	sd	a1,8(sp)
+   108cc:	9edff0ef          	jal	ra,102b8 <crc16_ccitt>
+   108d0:	65a2                	ld	a1,8(sp)
+   108d2:	42010793          	addi	a5,sp,1056
+   108d6:	42010713          	addi	a4,sp,1056
+   108da:	97ae                	add	a5,a5,a1
+   108dc:	972e                	add	a4,a4,a1
+   108de:	bfb7c783          	lbu	a5,-1029(a5)
+   108e2:	bfc74683          	lbu	a3,-1028(a4)
+   108e6:	0005071b          	sext.w	a4,a0
+   108ea:	0087979b          	slliw	a5,a5,0x8
+   108ee:	9fb5                	addw	a5,a5,a3
+   108f0:	17c2                	slli	a5,a5,0x30
+   108f2:	93c1                	srli	a5,a5,0x30
+   108f4:	e0f712e3          	bne	a4,a5,106f8 <xmodemReceive+0x104>
+   108f8:	01914503          	lbu	a0,25(sp)
+   108fc:	bd69                	j	10796 <xmodemReceive+0x1a2>
+   108fe:	414b873b          	subw	a4,s7,s4
+   10902:	8d2e                	mv	s10,a1
+   10904:	02b74363          	blt	a4,a1,1092a <xmodemReceive+0x336>
+   10908:	000d061b          	sext.w	a2,s10
+   1090c:	00c04763          	bgtz	a2,1091a <xmodemReceive+0x326>
+   10910:	2c85                	addiw	s9,s9,1
+   10912:	0ffcfc93          	andi	s9,s9,255
+   10916:	4d65                	li	s10,25
+   10918:	b561                	j	107a0 <xmodemReceive+0x1ac>
+   1091a:	014c0533          	add	a0,s8,s4
+   1091e:	85ee                	mv	a1,s11
+   10920:	b57ff0ef          	jal	ra,10476 <memcpy>
+   10924:	014d0a3b          	addw	s4,s10,s4
+   10928:	b7e5                	j	10910 <xmodemReceive+0x31c>
+   1092a:	8d3a                	mv	s10,a4
+   1092c:	bff1                	j	10908 <xmodemReceive+0x314>
+   1092e:	20000537          	lui	a0,0x20000
+   10932:	0016e5b7          	lui	a1,0x16e
+   10936:	36058593          	addi	a1,a1,864 # 16e360 <_end+0x15d1f1>
+   1093a:	00850613          	addi	a2,a0,8 # 20000008 <_end+0x1ffeee99>
+   1093e:	c01026f3          	rdtime	a3
+   10942:	96ae                	add	a3,a3,a1
+   10944:	a011                	j	10948 <xmodemReceive+0x354>
+   10946:	e7a5                	bnez	a5,109ae <xmodemReceive+0x3ba>
+   10948:	421c                	lw	a5,0(a2)
+   1094a:	c0102773          	rdtime	a4
+   1094e:	8b85                	andi	a5,a5,1
+   10950:	fee6fbe3          	bgeu	a3,a4,10946 <xmodemReceive+0x352>
+   10954:	200007b7          	lui	a5,0x20000
+   10958:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   1095c:	4298                	lw	a4,0(a3)
+   1095e:	8b21                	andi	a4,a4,8
+   10960:	ff75                	bnez	a4,1095c <xmodemReceive+0x368>
+   10962:	0d40000f          	fence	iow,o
+   10966:	4761                	li	a4,24
+   10968:	0791                	addi	a5,a5,4
+   1096a:	c398                	sw	a4,0(a5)
+   1096c:	200007b7          	lui	a5,0x20000
+   10970:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   10974:	4298                	lw	a4,0(a3)
+   10976:	8b21                	andi	a4,a4,8
+   10978:	ff75                	bnez	a4,10974 <xmodemReceive+0x380>
+   1097a:	0d40000f          	fence	iow,o
+   1097e:	4761                	li	a4,24
+   10980:	0791                	addi	a5,a5,4
+   10982:	c398                	sw	a4,0(a5)
+   10984:	200007b7          	lui	a5,0x20000
+   10988:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   1098c:	4298                	lw	a4,0(a3)
+   1098e:	8b21                	andi	a4,a4,8
+   10990:	ff75                	bnez	a4,1098c <xmodemReceive+0x398>
+   10992:	0d40000f          	fence	iow,o
+   10996:	4761                	li	a4,24
+   10998:	0791                	addi	a5,a5,4
+   1099a:	c398                	sw	a4,0(a5)
+   1099c:	5a79                	li	s4,-2
+   1099e:	b571                	j	1082a <xmodemReceive+0x236>
+   109a0:	0c80000f          	fence	io,i
+   109a4:	411c                	lw	a5,0(a0)
+   109a6:	2781                	sext.w	a5,a5
+   109a8:	ee07d4e3          	bgez	a5,10890 <xmodemReceive+0x29c>
+   109ac:	bdf5                	j	108a8 <xmodemReceive+0x2b4>
+   109ae:	0c80000f          	fence	io,i
+   109b2:	411c                	lw	a5,0(a0)
+   109b4:	2781                	sext.w	a5,a5
+   109b6:	f807d4e3          	bgez	a5,1093e <xmodemReceive+0x34a>
+   109ba:	bf69                	j	10954 <xmodemReceive+0x360>
+   109bc:	20000637          	lui	a2,0x20000
+   109c0:	0016e7b7          	lui	a5,0x16e
+   109c4:	36078793          	addi	a5,a5,864 # 16e360 <_end+0x15d1f1>
+   109c8:	00860593          	addi	a1,a2,8 # 20000008 <_end+0x1ffeee99>
+   109cc:	c0102773          	rdtime	a4
+   109d0:	973e                	add	a4,a4,a5
+   109d2:	a011                	j	109d6 <xmodemReceive+0x3e2>
+   109d4:	eea9                	bnez	a3,10a2e <xmodemReceive+0x43a>
+   109d6:	4194                	lw	a3,0(a1)
+   109d8:	c0102573          	rdtime	a0
+   109dc:	8a85                	andi	a3,a3,1
+   109de:	fea77be3          	bgeu	a4,a0,109d4 <xmodemReceive+0x3e0>
+   109e2:	200007b7          	lui	a5,0x20000
+   109e6:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   109ea:	4298                	lw	a4,0(a3)
+   109ec:	8b21                	andi	a4,a4,8
+   109ee:	ff75                	bnez	a4,109ea <xmodemReceive+0x3f6>
+   109f0:	0d40000f          	fence	iow,o
+   109f4:	4761                	li	a4,24
+   109f6:	0791                	addi	a5,a5,4
+   109f8:	c398                	sw	a4,0(a5)
+   109fa:	200007b7          	lui	a5,0x20000
+   109fe:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   10a02:	4298                	lw	a4,0(a3)
+   10a04:	8b21                	andi	a4,a4,8
+   10a06:	ff75                	bnez	a4,10a02 <xmodemReceive+0x40e>
+   10a08:	0d40000f          	fence	iow,o
+   10a0c:	4761                	li	a4,24
+   10a0e:	0791                	addi	a5,a5,4
+   10a10:	c398                	sw	a4,0(a5)
+   10a12:	200007b7          	lui	a5,0x20000
+   10a16:	00878693          	addi	a3,a5,8 # 20000008 <_end+0x1ffeee99>
+   10a1a:	4298                	lw	a4,0(a3)
+   10a1c:	8b21                	andi	a4,a4,8
+   10a1e:	ff75                	bnez	a4,10a1a <xmodemReceive+0x426>
+   10a20:	0d40000f          	fence	iow,o
+   10a24:	4761                	li	a4,24
+   10a26:	0791                	addi	a5,a5,4
+   10a28:	c398                	sw	a4,0(a5)
+   10a2a:	5a75                	li	s4,-3
+   10a2c:	bbfd                	j	1082a <xmodemReceive+0x236>
+   10a2e:	0c80000f          	fence	io,i
+   10a32:	4218                	lw	a4,0(a2)
+   10a34:	2701                	sext.w	a4,a4
+   10a36:	f8075be3          	bgez	a4,109cc <xmodemReceive+0x3d8>
+   10a3a:	b765                	j	109e2 <xmodemReceive+0x3ee>
+
+Disassembly of section .text.startup:
+
+0000000000010a3c <main>:
+   10a3c:	1141                	addi	sp,sp,-16
+   10a3e:	e406                	sd	ra,8(sp)
+   10a40:	e022                	sd	s0,0(sp)
+   10a42:	842a                	mv	s0,a0
+   10a44:	8b1ff0ef          	jal	ra,102f4 <gpio_init>
+   10a48:	4501                	li	a0,0
+   10a4a:	8c1ff0ef          	jal	ra,1030a <led_write>
+   10a4e:	479d                	li	a5,7
+   10a50:	0a87ef63          	bltu	a5,s0,10b0e <main+0xd2>
+   10a54:	00000717          	auipc	a4,0x0
+   10a58:	23870713          	addi	a4,a4,568 # 10c8c <logo+0x14c>
+   10a5c:	040a                	slli	s0,s0,0x2
+   10a5e:	943a                	add	s0,s0,a4
+   10a60:	401c                	lw	a5,0(s0)
+   10a62:	97ba                	add	a5,a5,a4
+   10a64:	8782                	jr	a5
+   10a66:	65c1                	lui	a1,0x10
+   10a68:	10000537          	lui	a0,0x10000
+   10a6c:	f8aff0ef          	jal	ra,101f6 <xmodem_loader>
+   10a70:	e955                	bnez	a0,10b24 <main+0xe8>
+   10a72:	3e800513          	li	a0,1000
+   10a76:	b63ff0ef          	jal	ra,105d8 <delay>
+   10a7a:	4501                	li	a0,0
+   10a7c:	88fff0ef          	jal	ra,1030a <led_write>
+   10a80:	0000100f          	fence.i
+   10a84:	10000537          	lui	a0,0x10000
+   10a88:	e8cff0ef          	jal	ra,10114 <fw_jump>
+   10a8c:	88bff0ef          	jal	ra,10316 <dipsw_read>
+   10a90:	0045551b          	srliw	a0,a0,0x4
+   10a94:	893d                	andi	a0,a0,15
+   10a96:	0541                	addi	a0,a0,16
+   10a98:	056a                	slli	a0,a0,0x1a
+   10a9a:	e7aff0ef          	jal	ra,10114 <fw_jump>
+   10a9e:	879ff0ef          	jal	ra,10316 <dipsw_read>
+   10aa2:	0045541b          	srliw	s0,a0,0x4
+   10aa6:	883d                	andi	s0,s0,15
+   10aa8:	0441                	addi	s0,s0,16
+   10aaa:	046a                	slli	s0,s0,0x1a
+   10aac:	bc1277f3          	csrrci	a5,0xbc1,4
+   10ab0:	080005b7          	lui	a1,0x8000
+   10ab4:	8522                	mv	a0,s0
+   10ab6:	f40ff0ef          	jal	ra,101f6 <xmodem_loader>
+   10aba:	e935                	bnez	a0,10b2e <main+0xf2>
+   10abc:	3e800513          	li	a0,1000
+   10ac0:	b19ff0ef          	jal	ra,105d8 <delay>
+   10ac4:	4501                	li	a0,0
+   10ac6:	845ff0ef          	jal	ra,1030a <led_write>
+   10aca:	bc1267f3          	csrrsi	a5,0xbc1,4
+   10ace:	0000100f          	fence.i
+   10ad2:	8522                	mv	a0,s0
+   10ad4:	e40ff0ef          	jal	ra,10114 <fw_jump>
+   10ad8:	4505                	li	a0,1
+   10ada:	057e                	slli	a0,a0,0x1f
+   10adc:	e38ff0ef          	jal	ra,10114 <fw_jump>
+   10ae0:	4405                	li	s0,1
+   10ae2:	400005b7          	lui	a1,0x40000
+   10ae6:	01f41513          	slli	a0,s0,0x1f
+   10aea:	f0cff0ef          	jal	ra,101f6 <xmodem_loader>
+   10aee:	e91d                	bnez	a0,10b24 <main+0xe8>
+   10af0:	3e800513          	li	a0,1000
+   10af4:	ae5ff0ef          	jal	ra,105d8 <delay>
+   10af8:	4501                	li	a0,0
+   10afa:	811ff0ef          	jal	ra,1030a <led_write>
+   10afe:	0000100f          	fence.i
+   10b02:	01f41513          	slli	a0,s0,0x1f
+   10b06:	e0eff0ef          	jal	ra,10114 <fw_jump>
+   10b0a:	e0eff0ef          	jal	ra,10118 <info>
+   10b0e:	0ff00513          	li	a0,255
+   10b12:	ff8ff0ef          	jal	ra,1030a <led_write>
+   10b16:	00000517          	auipc	a0,0x0
+   10b1a:	63250513          	addi	a0,a0,1586 # 11148 <crc16tab+0x498>
+   10b1e:	863ff0ef          	jal	ra,10380 <uart_string>
+   10b22:	a001                	j	10b22 <main+0xe6>
+   10b24:	0f000513          	li	a0,240
+   10b28:	fe2ff0ef          	jal	ra,1030a <led_write>
+   10b2c:	bfdd                	j	10b22 <main+0xe6>
+   10b2e:	0f000513          	li	a0,240
+   10b32:	fd8ff0ef          	jal	ra,1030a <led_write>
+   10b36:	bc1267f3          	csrrsi	a5,0xbc1,4
+   10b3a:	b7e5                	j	10b22 <main+0xe6>

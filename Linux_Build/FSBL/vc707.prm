@@ -1,0 +1,11 @@
+===================================
+Configuration Memory information
+===================================
+File Format        MCS
+Interface          BPIX16
+Size               128M
+Start Address      0x00000000
+End Address        0x07FFFFFF
+
+Addr1         Addr2         Date                    File(s)
+0x00000000    0x0000FF0F    May 18 17:47:52 2023    /home/anuj/work_manish/I2SRV64-SS_new/SRAM_Boot_code/BootROM.bin

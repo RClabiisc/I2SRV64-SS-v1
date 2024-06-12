@@ -1,0 +1,165 @@
+/dts-v1/;
+
+/ {
+  #address-cells = <2>;
+  #size-cells = <2>;
+  model = "IISc OoO RISC-V";
+
+  chosen {
+    bootargs = "earlycon console=hvc debug single";
+    stdout-path = "/soc/serial@20000000:57600n81";
+  };
+
+  cpus {
+    #address-cells = <1>;
+    #size-cells = <0>;
+    timebase-frequency = <1000000>; // 1 MHz
+
+    CPU0: cpu@0 {
+      clock-frequency = <16000000>; // 16 MHz
+      device_type = "cpu";
+      reg = <0>;
+      status = "okay";
+      compatible = "riscv";
+      riscv,isa = "rv64imafdc";
+
+      d-cache-block-size = <32>;
+      d-cache-sets = <128>;
+      d-cache-size = <16384>;
+      d-tlb-sets = <1>;
+      d-tlb-size = <32>;
+      i-cache-block-size = <32>;
+      i-cache-sets = <128>;
+      i-cache-size = <16384>;
+      i-tlb-sets = <1>;
+      i-tlb-size = <32>;
+
+      mmu-type = "riscv,sv39";
+      tlb-split;
+
+      // HLIC - hart local interrupt controller
+      CPU0_intc: interrupt-controller {
+        #interrupt-cells = <1>;
+        interrupt-controller;
+        compatible = "riscv,cpu-intc";
+      };
+    };
+  };
+
+  memory@80000000 {
+    device_type = "memory";
+    reg = <0x0 0x80000000 0x0 0x40000000>;
+  };
+
+  leds {
+    compatible = "gpio-leds";
+    heartbeat-led {
+      gpios = <&gpio0 1 0>;
+      linux,default-trigger = "heartbeat";
+      retain-state-suspended;
+    };
+  };
+  
+  ooo_soc: soc {
+    #address-cells = <2>;
+    #size-cells = <2>;
+    compatible = "simple-bus";
+    ranges;
+
+    clint@2000000 {
+      compatible = "riscv,clint0";
+      interrupts-extended = <&CPU0_intc 3 &CPU0_intc 7>;
+      reg = <0x0 0x2000000 0x0 0x10000>;
+      reg-names = "control";
+    };
+
+    PLIC: interrupt-controller@c000000 {
+      #address-cells = <0>;
+      #interrupt-cells = <1>;
+      compatible = "riscv,plic0";
+      interrupt-controller;
+      interrupts-extended = <&CPU0_intc 11 &CPU0_intc 9>;
+      reg = <0x0 0xc000000 0x0 0x4000000>;
+      riscv,max-priority = <7>;
+      riscv,ndev = <6>;
+    };
+
+    RS232_Uart_1: serial@20000000 {
+      clock-frequency = <16000000>;
+      compatible = "xlnx,axi-uartlite-1.02.a","xlnx,xps-uartlite-1.00.a","xlnx,xps-uartlite-1.02.a";
+      current-speed = <57600>;
+      device_type = "serial";
+      reg = <0x0 0x20000000 0x0 0x1000>;
+      interrupt-parent = <&PLIC>;
+      interrupts = <1>;
+      xlnx,baudrate = <0xE100>;
+      xlnx,data-bits = <0x8>;
+      xlnx,family = "virtex7";
+      xlnx,odd-parity = <0x0>;
+      xlnx,use-parity = <0x0>;
+    };
+
+    spi@20040000 {
+      compatible = "xlnx,xps-spi-2.00.b", "xlnx,xps-spi-2.00.a";
+      #address-cells = <1>;
+      #size-cells = <0>;
+      interrupt-parent = <&PLIC>;
+      interrupts = <5>;
+      reg = < 0x0 0x20040000 0x0 0x1000 >;
+      xlnx,family = "virtex7";
+      xlnx,fifo-exist = <0x1>;
+      xlnx,num-ss-bits = <0x1>;
+      xlnx,num-transfer-bits = <0x8>;
+      xlnx,sck-ratio = <0x4>;
+
+      mmc@0 {
+        compatible = "mmc-spi-slot";
+        reg = <0>;
+        spi-max-frequency = <12500000>;
+        voltage-ranges = <3300 3300>;
+        disable-wp;
+      };
+    };
+
+    gpio0: gpio@20010000 {
+      #gpio-cells = <2>;
+      compatible = "xlnx,xps-gpio-1.00.a";
+      gpio-controller ;
+      reg = <0x0 0x20010000 0x0 0x10000 >;
+      xlnx,all-inputs = <0x1>;
+      xlnx,all-inputs-2 = <0x0>;
+      xlnx,dout-default = <0x0>;
+      xlnx,dout-default-2 = <0x1>;
+      xlnx,gpio-width = <0x8>;
+      xlnx,gpio2-width = <0x8>;
+      interrupt-parent = <&PLIC>;
+      interrupts = <2>;
+      xlnx,interrupt-present = <0x1>;
+      xlnx,is-dual = <0x1>;
+      xlnx,tri-default = <0xffffffff>;
+      xlnx,tri-default-2 = <0xffffffff>;
+    };
+
+    gpio1: gpio@20050000 {
+      #gpio-cells = <2>;
+      compatible = "xlnx,xps-gpio-1.00.a";
+      gpio-controller ;
+      reg = <0x0 0x20050000 0x0 0x10000 >;
+      xlnx,all-inputs = <0x1>;
+      xlnx,all-inputs-2 = <0x0>;
+      xlnx,dout-default = <0x0>;
+      xlnx,dout-default-2 = <0x1>;
+      xlnx,gpio-width = <0x8>;
+      xlnx,gpio2-width = <0x8>;
+      interrupt-parent = <&PLIC>;
+      interrupts = <6>;
+      xlnx,interrupt-present = <0x1>;
+      xlnx,is-dual = <0x1>;
+      xlnx,tri-default = <0xffffffff>;
+      xlnx,tri-default-2 = <0xffffffff>;
+    };
+
+  };
+};
+
+
