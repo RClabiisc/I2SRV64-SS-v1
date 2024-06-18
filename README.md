@@ -111,5 +111,3 @@ port as specified by the RISC-V privileged specification is implemented in the c
 * This ROM is loaded with Zeroth Stage BootLoader (ZSBL) which supports the loading binary to inter-
   nal SRAM, DRAM using XMODEM file transfer protocol through UART and executing the
   program from SRAM or DRAM.
-
-# Single_core
